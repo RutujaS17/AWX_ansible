@@ -1,0 +1,75 @@
+- name: Install Java 
+  become: yes
+  become_user: root
+  apt:
+    name: openjdk-11-jre-headless
+    state: present
+
+- name: crete tomcat group
+  become: yes
+  become_user: root
+  ansible.builtin.group:
+    name: tomcat
+    state: present
+
+- name: create tomcat user 
+  become: yes
+  become_user: root
+  ansible.builtin.user:
+    name: tomcat
+    group: tomcat
+
+- name: Create a Tomcat Directory
+  become: yes
+  become_user: root
+  file:
+    path: /opt/tomcat9
+    owner: tomcat
+    group: tomcat
+    mode: 755
+    recurse: yes
+
+- name: download tomcat server packages
+  become: yes
+  become_user: root
+  get_url:
+    url: https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.64/bin/apache-tomcat-9.0.64.tar.gz #https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.56/bin/apache-tomcat-9.0.56.tar.gz #http://mirrors.estointernet.in/apache/tomcat/tomcat-9/v9.0.44/bin/apache-tomcat-9.0.44.tar.gz
+    dest: /opt/tomcat9
+
+- name: extract tomcat packages
+  become: yes
+  become_user: root
+  unarchive:
+    src: https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.64/bin/apache-tomcat-9.0.64.tar.gz
+    dest: /opt/tomcat9
+    remote_src: yes
+
+- name: copy tomcat.service file 
+  become: yes
+  become_user: root
+  copy:
+    src: /etc/ansible/Product/jaydeep_product/files/tomcat.service
+    dest: /etc/systemd/system/tomcat.service
+
+- name: restart the daemon_reload
+  become: yes
+  become_user: root
+  shell: systemctl daemon-reload
+
+- name: Start tomcat service 
+  become: yes
+  become_user: root
+  shell: systemctl start tomcat
+
+
+# - name: Make sure a service is running
+#   become: yes
+#   become_user: root
+#   ansible.builtin.systemd:
+#     name: tomcat9
+#     state: started
+#     enabled: true
+#     daemon_reload: true
+
+  
+

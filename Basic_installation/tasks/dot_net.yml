@@ -1,0 +1,58 @@
+---
+# - block:
+
+  # https://support.microsoft.com/en-us/kb/2901907
+# - name: "Install Microsoft .NET Framework 4.5.2."
+#   ansible.windows.win_package:
+#     path: "https://download.microsoft.com/download/E/2/1/E21644B5-2DF2-47C2-91BD-63C560427900/NDP452-KB2901907-x86-x64-AllOS-ENU.exe"
+#     product_id: "{26784146-6E05-3FF9-9335-786C7C0FB5BE}"
+#   # register: dotnet452_exe
+#   # when: dotnet452_uninstall is not defined or not dotnet452_uninstall
+
+# - name: "Debug: Install output."
+#   debug:
+#     var: dotnet452_exe
+#     verbosity: 1
+    # when: dotnet452_uninstall is not defined or not dotnet452_uninstall
+
+  # when: dotnet452_uninstall is not defined or not dotnet452_uninstall
+
+# - block:
+
+# - name: "Uninstall Microsoft .NET Framework 4.5.2."
+#   raw: Start-Process "C:\Windows\System32\msiexec.exe" -ArgumentList "/x {26784146-6E05-3FF9-9335-786C7C0FB5BE} /qn" -Wait
+#   register: dotnet452_removed
+
+# - name: "Debug: Uninstall output."
+#   debug:
+#     var: dotnet452_removed
+#     verbosity: 1
+
+#   when: dotnet452_uninstall is defined and dotnet452_uninstall
+
+
+
+
+- name: Download MS product repository
+  get_url:
+    url: https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb
+    dest: /tmp/packages-microsoft-prod.deb
+- name: Install MS product repository
+  apt: deb=/tmp/packages-microsoft-prod.deb
+  become: true
+
+- name: Update apt-get repo and cache
+  apt: update_cache=yes force_apt_get=yes cache_valid_time=3600
+  
+- name: Make sure HTTPS is supported by apt
+  apt:
+    name: apt-transport-https
+    state: present
+    update_cache: no
+  become: true
+- name: Install .NET Core SDK
+  apt:
+    name: [dotnet-sdk-3.1, apt-transport-https, dotnet-runtime-3.1  ]
+    state: present
+    update_cache: yes
+  become: true

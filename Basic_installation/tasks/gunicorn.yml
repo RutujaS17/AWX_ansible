@@ -1,0 +1,44 @@
+- name: Install gunicorn
+  pip:
+    name: gunicorn
+    state: present
+
+- name: Create Group for Gunicorn
+  become: yes
+  become_user: root
+  group:
+    name: "{{ gunicorn_group_name }}"
+    system: yes
+    state: present
+
+- name: Create User for Gunicorn
+  become: yes
+  become_user: root
+  user:
+    name: "{{ gunicorn_user_name }}"
+    groups: "{{ gunicorn_group_name }},www-data"
+    append: yes
+
+
+- name: Install python3 
+  become: yes
+  become_user: root
+  apt:
+    name: python3
+    state: present
+
+# - name: Create gunicorn log directory
+#   file:
+#     path: "{{ gunicorn_log_dir }}"
+#     state: directory
+#     owner: "{{ gunicorn_user_name }}"
+#     group: "www-data"
+#     mode: 0775
+
+# - name: Create gunicorn configuration directory
+#   file:
+#     path: "{{ gunicorn_config_dir }}"
+#     state: directory
+#     owner: "{{ gunicorn_user_name }}"
+#     group: "{{ gunicorn_group_name }}"
+#     mode: 0775

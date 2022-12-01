@@ -1,0 +1,23 @@
+---
+# tasks file for jaydeep_product
+
+- name: Ansible playbook to test Include module
+  include: nodejs.yml
+
+- name: Ansible playbook to test Include module
+  include: docker.yml
+
+- name: Ansible playbook to test Include module
+  include: nginx.yml
+
+- name: Ansible playbook to test Include module
+  include: tomcat_and_java.yml
+
+- name: Ansible playbook to test Include module
+  include: gunicorn.yml
+
+- name: Ansible playbook to test Include module
+  include: maven.yml
+
+- name: Ansible playbook to test Include module
+  include: dot_net.yml

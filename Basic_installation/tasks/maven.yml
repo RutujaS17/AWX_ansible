@@ -1,0 +1,76 @@
+- name: Check If maven is already installed or not
+  shell: "mvn -version | grep -w 'Apache Maven' | awk '{print $3}'"
+  register: maven_installed
+
+- name: Installed maven version
+  debug: "msg={{maven_installed.stdout}}"
+
+- name: download tomcat server packages
+  become: yes
+  become_user: root
+  get_url:
+    url: http://www.apache.org/dist/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz #https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.56/bin/apache-tomcat-9.0.56.tar.gz #http://mirrors.estointernet.in/apache/tomcat/tomcat-9/v9.0.44/bin/apache-tomcat-9.0.44.tar.gz
+    dest: "{{maven_home_parent_directory}}"
+
+- name: Download and Unarchive maven
+  become: yes
+  become_user: root
+  unarchive:
+    src: "http://www.apache.org/dist/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz"
+    dest: "{{maven_home_parent_directory}}"
+    remote_src: yes
+
+- name: Create maven symlink to /usr/bin
+  become: yes
+  become_user: root
+  file:
+    src: "{{maven_home_parent_directory}}/apache-maven-{{maven_version}}/bin/mvn"
+    dest: /usr/bin/mvn
+    state: link
+
+- name: Configure maven and its environment variables
+  become: yes
+  become_user: root
+  lineinfile:
+    dest: "{{maven_env_file}}"
+    line: "{{ item.line }}"
+    create: yes
+    state: present
+  with_items:
+    - { line: 'M2_HOME={{maven_home_parent_directory}}/apache-maven-{{maven_version}}' }
+    - { line: 'PATH=$PATH:$M2_HOME/bin' }
+
+- name: Exports/Run maven env file for make M2_HOME available globally
+  become: yes
+  become_user: root
+  ansible.builtin.shell: source {{ maven_env_file }}
+  args:
+    executable: /bin/bash
+
+
+
+
+
+
+
+# - name: Download Apache Maven 
+#   get_url: url=http://apache.claz.org/maven/maven-3/3.1.1/binaries/apache-maven--bin.tar.gz dest=/tmp/apache-maven-3.1.1-bin.tar.gz
+
+# - name: Untar Maven 
+#   shell: chdir=/tmp creates=/opt/apache-maven-3.1.1 tar -zxf apache-maven-3.1.1-bin.tar.gz -C /opt
+
+# # What is missing
+
+# - name: Update path for maven use
+#   shell: export PATH=/opt/apache-maven-3.1.1/bin:$PATH
+
+
+
+
+
+
+# - name: install maven (and other packages if needed)
+#   # become: yes
+#   apt: pkg={{ item }} state=latest update_cache=yes cache_valid_time=3600
+#   with_items:
+#     - maven

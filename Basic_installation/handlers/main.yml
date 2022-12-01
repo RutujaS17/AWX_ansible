@@ -1,0 +1,6 @@
+---
+# handlers file for jaydeep_product
+- name: Restart Nginx
+  service:
+    name: nginx
+    state: restarted
