@@ -1,4 +1,4 @@
 ---
-- hosts: web
+- hosts: 54.152.29.157
   roles:
     - Basic_installation
