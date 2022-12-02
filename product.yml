@@ -1,4 +1,4 @@
 ---
-- hosts: web
+- hosts: 18.207.151.143
   roles:
     - Basic_installation
