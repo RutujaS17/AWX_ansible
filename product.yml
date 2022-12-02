@@ -1,4 +1,4 @@
 ---
-- hosts: 44.212.22.77 ansible_user=ubuntu
+- hosts: 44.212.22.77
   roles:
     - Basic_installation
